@@ -2,6 +2,6 @@
 
 # Replace with makefile
 
-rm wiscan
+# rm wiscan
 
-g++ -lncurses cli.cpp main.cpp -o wiscan
+g++ -lncurses cli.cpp wifilist.cpp wificell.cpp main.cpp -o wiscan

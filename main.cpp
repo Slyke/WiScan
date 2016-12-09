@@ -7,6 +7,8 @@
 #include <string>
 
 #include "cli.h"
+#include "wificell.h"
+#include "wifilist.h"
 
 using namespace std;
 
@@ -21,12 +23,17 @@ int main (void)
   cbreak();
   noecho();
   keypad(stdscr, TRUE);
-  //iwlist wlan0 scan | grep "ESSID:" | cut -d':' -f2- // WIFI LIST
+  //iwlist wlan0 scan | grep 'ESSID\|Address\|Quality\|Frequency\|Encryption' | tr -s " " | awk '{print $0,","}' | sed 's/ Cell /-- \n Cell /g' // WIFI LIST
   mvaddstr(1, 1, "123456789-123456789-123456789-123456789-123456789-123456789");
   mvaddstr(5, 25, "Testing");
-  string thecmd = "iwlist wlan0 scan | grep \"ESSID:\" | cut -d':' -f2-";
+  string thecmd = "iwlist wlan0 scan | grep \"ESSID:\" | cut -d':' -f2- | tr -d '\"'";
   string result = CLI::exec(thecmd.c_str());
   mvaddstr(6, 2, result.c_str());
+
+  WifiList * wifiList = new WifiList();
+  wifiList->wifiScan();
+  mvaddstr(8, 16, wifiList->getWifiList().at(0).getCellID().c_str());
+
   refresh();
   sleep(3);
 

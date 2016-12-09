@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
-#include <stdio.h>
 
 #include "cli.h"
 
@@ -25,4 +24,20 @@ string CLI::exec(const char* cmd) {
   pclose(pipe);
   return result;
 }
+
+/*
+vector<string> CLI::getNearByCells() {
+  char input[16] = "          Cell ";
+  char *token = std::strtok(input, ":");
+  std::vector<int> v;
+  while (token != NULL) {
+    v.push_back( std::strtol( token, NULL, 10 ));
+    token = std::strtok(NULL, ":");
+  }
+
+  return v;
+
+}
+*/
+
 

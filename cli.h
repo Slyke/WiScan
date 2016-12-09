@@ -7,6 +7,7 @@ class CLI
 {
   public:
     static string exec(const char* cmd);
+    //vector<string> getNearByCells();
 };
 
 #endif
