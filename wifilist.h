@@ -16,6 +16,7 @@ class WifiList
     vector<WifiCell> getWifiList();
 
   private:
+    struct CommandLineCommands;
     vector<WifiCell> wifiList;
 
 };
