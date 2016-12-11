@@ -39,7 +39,6 @@ class WifiList
     static const string PARSE_ENCRYPTION_2;
     static vector<string> parseResultToCells(string cmdResults);
     void parseCommandLineToWifiCell(string commandLineCell);
-    static string convertInt(int number);
     static string parseData(string startDelimiter, string endDelimiter, string fromString);
     vector<WifiCell> wifiList;
 

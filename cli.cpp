@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <stdio.h>
 #include <string>
+#include <sstream>
 
 #include "cli.h"
 
@@ -23,6 +24,12 @@ string CLI::exec(const char* cmd) {
   }
   pclose(pipe);
   return result;
+}
+
+string CLI::convertInt(int number) {
+   stringstream ss;
+   ss << number;
+   return ss.str();
 }
 
 /*

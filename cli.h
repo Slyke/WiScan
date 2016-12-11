@@ -8,6 +8,7 @@ class CLI
   public:
     static string exec(const char* cmd);
     //vector<string> getNearByCells();
+    static string convertInt(int number);
 };
 
 #endif

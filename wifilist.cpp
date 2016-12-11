@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <cstring>
-#include <sstream>
 
 #include "wifilist.h"
 #include "wificell.h"
@@ -14,7 +13,7 @@ using namespace std;
 const string WifiList::CMD_GETWIFILIST_1 = "iwlist ";
 const string WifiList::CMD_GETWIFILIST_2 = " scan | grep 'ESSID\\|Address\\|Quality\\|Frequency\\|Encryption' | tr -s \" \" | awk '{print $0,\",\"}' | sed 's/ Cell /-- \\n Cell /g'";
 const string WifiList::DEFAULT_ADAPTER = "wlan0";
-const string WifiList::DEFAULT_CELL_DELIMITER = "--\n";
+const string WifiList::DEFAULT_CELL_DELIMITER = "--";
 
 const string WifiList::PARSE_CELL_1 = " Cell ";
 const string WifiList::PARSE_CELL_2 = " - Address";
@@ -48,6 +47,8 @@ void WifiList::wifiScan(string adapter) {
 
   vector<string> cells = WifiList::parseResultToCells(cmdResult);
 
+  this->wifiList.clear();
+
   for(vector<string>::size_type i = 0; i != cells.size(); i++) {
     WifiList::parseCommandLineToWifiCell(cells[i]);
   }
@@ -55,6 +56,11 @@ void WifiList::wifiScan(string adapter) {
 }
 
 void WifiList::parseCommandLineToWifiCell(string commandLineCell) {
+
+  if (commandLineCell.size() < 4) {
+    return;
+  }
+
   string cellNumber = "Cell ";
   cellNumber += WifiList::parseData(WifiList::PARSE_CELL_1, WifiList::PARSE_CELL_2, commandLineCell);
 
@@ -74,14 +80,15 @@ vector<string> WifiList::parseResultToCells(string cmdResults) {
   // This function splits the returned results from the command line up into their respective cells.
   vector<string> cells;
   size_t lastPos = 0;
-  size_t nextPos = 0;
-  string token;
-  while ((nextPos = cmdResults.find(WifiList::DEFAULT_CELL_DELIMITER)) != string::npos) {
+  size_t nextPos = cmdResults.find(WifiList::DEFAULT_CELL_DELIMITER);
+
+  while (nextPos != string::npos) {
     cells.push_back(cmdResults.substr(lastPos, nextPos - lastPos));
-    lastPos = nextPos + 1;
+    lastPos = nextPos + WifiList::DEFAULT_CELL_DELIMITER.length();
+    nextPos = cmdResults.find(WifiList::DEFAULT_CELL_DELIMITER, lastPos);
   }
   
-  cells.push_back(cmdResults.substr(lastPos));
+  cells.push_back(cmdResults.substr(lastPos, nextPos));
 
   return cells;
 
@@ -97,12 +104,6 @@ string WifiList::parseData(string startDelimiter, string endDelimiter, string fr
 
   return theReturn;
 
-}
-
-string WifiList::convertInt(int number) {
-   stringstream ss;
-   ss << number;
-   return ss.str();
 }
 
 void WifiList::wifiScan() {
