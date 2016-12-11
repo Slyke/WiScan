@@ -29,8 +29,9 @@ int main (void)
   WifiList * wifiList = new WifiList();
   wifiList->wifiScan();
 
-
   mvaddstr(8, 16, wifiList->getWifiList().at(0).getMAC().c_str());
+  mvaddstr(9, 16, wifiList->getWifiList().at(0).getESSID().c_str());
+  mvaddstr(10, 16, wifiList->getWifiList().at(0).getLinkQuality().c_str());
 
   refresh();
   sleep(3);

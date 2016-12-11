@@ -20,6 +20,18 @@ const string WifiList::PARSE_CELL_1 = " Cell ";
 const string WifiList::PARSE_CELL_2 = " - Address";
 const string WifiList::PARSE_ADDRESS_1 = " - Address: ";
 const string WifiList::PARSE_ADDRESS_2 = " ,";
+const string WifiList::PARSE_ESSID_1 = "ESSID:\"";
+const string WifiList::PARSE_ESSID_2 = "\" ,";
+const string WifiList::PARSE_CHANNEL_1 = "(Channel ";
+const string WifiList::PARSE_CHANNEL_2 = ") ,";
+const string WifiList::PARSE_FREQUENCY_1 = " Frequency:";
+const string WifiList::PARSE_FREQUENCY_2 = " (Channel";
+const string WifiList::PARSE_LINK_1 = " Quality=";
+const string WifiList::PARSE_LINK_2 = " Signal level";
+const string WifiList::PARSE_SIGNAL_1 = " Signal level=";
+const string WifiList::PARSE_SIGNAL_2 = " dBm  ,";
+const string WifiList::PARSE_ENCRYPTION_1 = " Encryption key:";
+const string WifiList::PARSE_ENCRYPTION_2 = " ,";
 
 WifiList::WifiList() {
 
@@ -47,10 +59,15 @@ void WifiList::parseCommandLineToWifiCell(string commandLineCell) {
   cellNumber += WifiList::parseData(WifiList::PARSE_CELL_1, WifiList::PARSE_CELL_2, commandLineCell);
 
   string MAC = WifiList::parseData(WifiList::PARSE_ADDRESS_1, WifiList::PARSE_ADDRESS_2, commandLineCell);
+  string ESSID = WifiList::parseData(WifiList::PARSE_ESSID_1, WifiList::PARSE_ESSID_2, commandLineCell);
+  string channel = WifiList::parseData(WifiList::PARSE_CHANNEL_1, WifiList::PARSE_CHANNEL_2, commandLineCell);
+  string frequency = WifiList::parseData(WifiList::PARSE_FREQUENCY_1, WifiList::PARSE_FREQUENCY_2, commandLineCell);
+  string linkQuality = WifiList::parseData(WifiList::PARSE_LINK_1, WifiList::PARSE_LINK_2, commandLineCell);
+  string signalLevel = WifiList::parseData(WifiList::PARSE_SIGNAL_1, WifiList::PARSE_SIGNAL_2, commandLineCell);
+  string encryptionState = WifiList::parseData(WifiList::PARSE_ENCRYPTION_1, WifiList::PARSE_ENCRYPTION_2, commandLineCell);
 
-  this->wifiList.push_back(WifiCell(cellNumber.c_str(), "essid1", "channel", MAC.c_str(), "frequency", "link", "signal", "encryption"));
-
-    
+  this->wifiList.push_back(WifiCell(cellNumber.c_str(), ESSID.c_str(), channel.c_str(), MAC.c_str(), frequency.c_str(), linkQuality.c_str(), signalLevel.c_str(), encryptionState.c_str()));
+   
 }
 
 vector<string> WifiList::parseResultToCells(string cmdResults) {
