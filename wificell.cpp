@@ -24,6 +24,9 @@ string WifiCell::getCellID() {
 }
 
 string WifiCell::getESSID() {
+  if (ESSID.size() > 20) {
+    return ESSID.substr(0, 20);
+  }
   return ESSID;
 }
 

@@ -5,75 +5,92 @@
 #include <curses.h>
 #include <cstdio>
 #include <string>
+#include <sys/ioctl.h>
 
 #include <pthread.h>
 #include <cstdlib>
 
-#include "cli.h"
-#include "wificell.h"
-#include "wifilist.h"
+#include "screens/screens.h"
+// #include "touchinput.h"
 
 #define MAX_WIFI_LIST    12
 
 using namespace std;
 
 WINDOW * maintty;
-WifiList * wifiList;
+bool appRunning = true;
+
+int currentScreen = 0;
 
 void *UpdateWindow(void *threadID) {
 
-  wifiList = new WifiList();
-  vector<WifiCell> cellList;
-  string tmpWifiName;
+  ScanScreen::maintty = maintty;
 
-  mvaddstr(1, 2, "Wifi List: (Press to Select).");
-
-  for (;;) {
-    wifiList->wifiScan();
-    cellList = wifiList->getWifiList();
-
-    mvaddstr(1, 35, (string("Total in Range: ") + string(CLI::convertInt(cellList.size()))).c_str());
-
-    for(vector<string>::size_type i = 0; i != cellList.size() && i != MAX_WIFI_LIST; i++) {
-      tmpWifiName = cellList[i].getESSID() + " - (" + cellList[i].getMAC() + ")";
-      mvaddstr((3 * (i + 1)), 2, tmpWifiName.c_str());
-      mvaddstr(((3 * (i + 1)) + 1), 2, cellList[i].getLinkQuality().c_str());
-      // mvaddstr((4 * (i + 1)), 2,  CLI::convertInt(i).c_str());
+  while (appRunning) {
+    if (currentScreen == 0) {
+      ScanScreen::updateWindow();
     }
-
+    
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    mvaddstr(w.ws_row - 1, w.ws_col - 1, "");
     refresh();
-    // sleep(1);
   }
 
   pthread_exit(NULL);
 
 }
 
-int main (void)
-{
-  if ((maintty = initscr()) == NULL) {
-    fprintf(stderr, "Error initialising ncurses.\n");
-    exit(1);
-  }
+void* checkTouchEvents(void * threadID) {
+
+}
+
+void setupWindow() {
+
+  start_color();
+
+  init_pair(1, COLOR_BLUE, COLOR_BLACK); // Border color
+  init_pair(2, COLOR_GREEN, COLOR_BLACK); // Wifi Name
+  init_pair(3, COLOR_CYAN, COLOR_RED); // Exit Background
+  init_pair(4, COLOR_GREEN, COLOR_RED); // Exit text
+  init_pair(5, COLOR_WHITE, COLOR_BLUE); // Buttons
+  
+  attron(COLOR_PAIR(1));
   box(maintty, '|', '-');
+  attroff(COLOR_PAIR(1));
   touchwin(maintty);
   wrefresh(maintty);
   cbreak();
   noecho();
   keypad(stdscr, TRUE);
-  // mvaddstr(1, 1, "123456789-123456789-123456789-123456789-123456789-123456789");
-  // mvaddstr(5, 25, "Testing");
+}
 
-  // mvaddstr(8, 16, "Getting list...");
+int main (void)
+{
+  setlocale(LC_ALL, "");
+  if ((maintty = initscr()) == NULL) {
+    fprintf(stderr, "Error initialising ncurses.\n");
+    exit(1);
+  }
+  if (has_colors() == FALSE)	{
+    endwin();
+		fprintf(stderr, "Your terminal does not support color\n");
+		exit(1);
+	}
+  setupWindow();
+
+  mvaddstr(8, 8, "Setting up and Getting the list...");
+  refresh();
 
   pthread_t uiThread;
   pthread_t touchThread;
 
   int uiUpdate = pthread_create(&uiThread, NULL, UpdateWindow, (void *)0);
-  //int uiTouchEvent = pthread_create(&touchThread, NULL, UpdateWindow, (void *)0);
+  //int uiTouchEvent = pthread_create(&touchThread, NULL, checkTouchEvents, (void *)0);
 
-  refresh();
-  sleep(10);
+  while (appRunning) {
+    sleep(20); // Let the other threads run the execution now.
+  }
 
   delwin(maintty);
   endwin();
