@@ -8,6 +8,7 @@
 #include "../wificell.h"
 #include "../wifilist.h"
 #include "../cli.h"
+#include "../uiobj.h"
 #include "scan.h"
 
 using namespace std;
@@ -17,10 +18,14 @@ const int btnSelectPosY = 13;
 const int btnDownArrowPosY = 21;
 
 WINDOW * ScanScreen::maintty;
+vector<UIObject> ScanScreen::uiObjects;
 
-void ScanScreen::updateWindow() {
+void ScanScreen::updateWindow(vector<int> touchEvents) {
     clear();
     ScanScreen::drawBorder();
+
+    ScanScreen::generateUIObjects();
+
     WifiList * wifiList = new WifiList();
     vector<WifiCell> cellList;
     
@@ -46,6 +51,14 @@ void ScanScreen::updateWindow() {
 
     refresh();
     delete wifiList;
+}
+
+void ScanScreen::generateUIObjects() {
+  for(vector<string>::size_type i = 0; i != ScanScreen::uiObjects.size(); i++) {
+    delete ScanScreen::uiObjects[i];
+  }
+
+  ScanScreen::uiObjects.push_back(UIObject("exit", 221, 3386, 731, 3722));
 }
 
 void ScanScreen::drawExit() {

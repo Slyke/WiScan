@@ -1,17 +1,19 @@
 #ifndef __TOUCH_INPUT_H_INCLUDED__
 #define __TOUCH_INPUT_H_INCLUDED__ 
 
-#include <array>
+#include <vector>
+
+using namespace std;
 
 class TouchInput
 {
   public:
     static void updateTouchInputs();
-    static array<int> getTouchEvent();
+    static vector<int> getTouchInput();
 
   private:
     static void drawBorder();
-    static array<int> touchEvent;
+    static vector<int> touchEvent;
 
 };
 

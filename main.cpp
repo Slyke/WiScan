@@ -11,7 +11,8 @@
 #include <cstdlib>
 
 #include "screens/screens.h"
-// #include "touchinput.h"
+#include "touchinput.h"
+#include "cli.h"
 
 #define MAX_WIFI_LIST    12
 
@@ -22,26 +23,39 @@ bool appRunning = true;
 
 int currentScreen = 0;
 
+void * checkTouchEvents(void *threadID) {
+  while (appRunning) {
+    TouchInput::updateTouchInputs();
+    usleep(20000);
+  }
+}
+
 void *UpdateWindow(void *threadID) {
 
   ScanScreen::maintty = maintty;
 
   while (appRunning) {
     if (currentScreen == 0) {
-      ScanScreen::updateWindow();
+      vector<int> touchEvents = TouchInput::getTouchInput();
+      ScanScreen::updateWindow(touchEvents);
+
+      //Some debug stuff
+      string tmp = CLI::convertInt(touch[0]);
+      tmp += ", ";
+      tmp += CLI::convertInt(touch[1]);
+      mvaddstr(2, 36, (string("X,Y: ") + string(tmp)).c_str());
+
+      refresh();
     }
     
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     mvaddstr(w.ws_row - 1, w.ws_col - 1, "");
     refresh();
+    usleep(2000);
   }
 
   pthread_exit(NULL);
-
-}
-
-void* checkTouchEvents(void * threadID) {
 
 }
 
@@ -86,7 +100,7 @@ int main (void)
   pthread_t touchThread;
 
   int uiUpdate = pthread_create(&uiThread, NULL, UpdateWindow, (void *)0);
-  //int uiTouchEvent = pthread_create(&touchThread, NULL, checkTouchEvents, (void *)0);
+  int uiTouchEvent = pthread_create(&touchThread, NULL, checkTouchEvents, (void *)0);
 
   while (appRunning) {
     sleep(20); // Let the other threads run the execution now.

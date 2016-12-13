@@ -8,13 +8,15 @@ using namespace std;
 class ScanScreen
 {
   public:
-    static void updateWindow();
+    static void updateWindow(vector<int> touchEvents);
     static void drawExit();
     static void drawControls();
     static WINDOW * maintty;
 
   private:
     static void drawBorder();
+    static void generateUIObjects();
+    static vector<UIObject> uiObjects;
 
 };
 
