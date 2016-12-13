@@ -4,4 +4,4 @@
  
 # rm wiscan
  
-g++ -lncursesw -lpthread cli.cpp wifilist.cpp wificell.cpp screens/scan.cpp main.cpp -o wiscan.so
+g++ cli.cpp wifilist.cpp wificell.cpp screens/scan.cpp main.cpp -o wiscan.so -lncursesw -lcurses -lncurses -lpthread 
