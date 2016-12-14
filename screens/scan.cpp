@@ -6,10 +6,13 @@
 #include <math.h>
 #include <cstdlib>
 
+#include <pthread.h>
+
 #include "../wificell.h"
 #include "../wifilist.h"
 #include "../cli.h"
 #include "../uiobj.h"
+#include "../touchinput.h" // Todo: Update touchInput to byref
 #include "scan.h"
 
 using namespace std;
@@ -18,8 +21,27 @@ const int btnUpArrowPosY = 5;
 const int btnSelectPosY = 13;
 const int btnDownArrowPosY = 21;
 
+int ScanScreen::listOffset = 0;
+int ScanScreen::selectedListItem = -1;
+int ScanScreen::scanState = -1;
+
 WINDOW * ScanScreen::maintty;
 vector<UIObject> ScanScreen::uiObjects;
+vector<WifiCell> ScanScreen::cellList;
+
+void * ScanScreen::scanArea(void *threadID) {
+  if (ScanScreen::scanState == -1 || ScanScreen::scanState == 0) {
+    ScanScreen::scanState = 1;
+    WifiList * wifiList = new WifiList();
+    
+    wifiList->wifiScan();
+    ScanScreen::cellList = wifiList->getWifiList();
+
+    delete wifiList;
+    ScanScreen::scanState = 0;
+  }
+
+}
 
 void ScanScreen::updateWindow(vector<int> touchEvents) {
     clear();
@@ -28,31 +50,48 @@ void ScanScreen::updateWindow(vector<int> touchEvents) {
     ScanScreen::checkTouchEvents(touchEvents);
     ScanScreen::generateUIObjects();
 
-    WifiList * wifiList = new WifiList();
-    vector<WifiCell> cellList;
-    
-    wifiList->wifiScan();
-    cellList = wifiList->getWifiList();
+    if (ScanScreen::scanState == 0) {
+      pthread_t scanThread;
+      int updateScans = pthread_create(&scanThread, NULL, ScanScreen::scanArea, (void *)0);
+    } else if (ScanScreen::scanState <= -1) {
+      pthread_t scanThread;
+      int updateScans = pthread_create(&scanThread, NULL, ScanScreen::scanArea, (void *)0);
+      usleep(3000000);
+      return ;
+    }
 
     mvaddstr(1, 2, "Wifi List: (Press to Select).");
-    mvaddstr(1, 36, (string("Total in Range: ") + string(CLI::convertInt(cellList.size()))).c_str());
+    mvaddstr(1, 36, (string("Total in Range: ") + string(CLI::convertInt(ScanScreen::cellList.size()))).c_str());
 
-    for(vector<string>::size_type i = 0; i != cellList.size() && i != MAX_WIFI_LIST; i++) {
-      string tmpWifiMAC = "(" + cellList[i].getMAC() + ") ";
+    for(vector<string>::size_type i = ScanScreen::listOffset; i <= ScanScreen::cellList.size() && i <= (MAX_WIFI_LIST - ScanScreen::listOffset); i++) {
+      string tmpWifiMAC = "(" + ScanScreen::cellList[i].getMAC() + ") ";
       int tmpWifiLength = tmpWifiMAC.size();
-      string tmpWifiName = " - " + cellList[i].getESSID();
-      mvaddstr((3 * (i + 1)), 2, tmpWifiMAC.c_str());
-      attron(COLOR_PAIR(2));
-      mvaddstr((3 * (i + 1)), tmpWifiLength, tmpWifiName.c_str());
-      attroff(COLOR_PAIR(2));
-      mvaddstr(((3 * (i + 1)) + 1), 2, cellList[i].getLinkQuality().c_str());
+      string tmpWifiName = " - " + ScanScreen::cellList[i].getESSID();
+
+      if (ScanScreen::selectedListItem == i) {
+        attron(COLOR_PAIR(6));
+        mvaddstr((3 * (i + 1)), 2, tmpWifiMAC.c_str());
+        attroff(COLOR_PAIR(6));
+        attron(COLOR_PAIR(7));
+        mvaddstr((3 * (i + 1)), tmpWifiLength + 1, tmpWifiName.c_str());
+        attroff(COLOR_PAIR(7));
+        attron(COLOR_PAIR(6));
+        mvaddstr(((3 * (i + 1)) + 1), 2, ScanScreen::cellList[i].getLinkQuality().c_str());
+        attroff(COLOR_PAIR(6));
+      } else {
+        mvaddstr((3 * (i + 1)), 2, tmpWifiMAC.c_str());
+        attron(COLOR_PAIR(2));
+        mvaddstr((3 * (i + 1)), tmpWifiLength + 1, tmpWifiName.c_str());
+        attroff(COLOR_PAIR(2));
+        mvaddstr(((3 * (i + 1)) + 1), 2, ScanScreen::cellList[i].getLinkQuality().c_str());
+      }
+
     }
 
     drawControls();
     drawExit();
 
     refresh();
-    delete wifiList;
 }
 
 void ScanScreen::generateUIObjects() {
@@ -63,14 +102,54 @@ void ScanScreen::generateUIObjects() {
 
   ScanScreen::uiObjects.clear();
 
-  ScanScreen::uiObjects.push_back(UIObject("exit", 221, 3386, 731, 3722, &ScanScreen::btnExit));
+  ScanScreen::uiObjects.push_back(UIObject("btnUp", 193, 692, 797, 1056, &ScanScreen::btnUp));
+  ScanScreen::uiObjects.push_back(UIObject("btnSelect", 200, 1461, 810, 1773, &ScanScreen::btnSelect));
+  ScanScreen::uiObjects.push_back(UIObject("btnDown", 228, 2214, 802, 2549, &ScanScreen::btnDown));
+
+  ScanScreen::uiObjects.push_back(UIObject("btnExit", 221, 3386, 731, 3722, &ScanScreen::btnExit));
 }
 
 void ScanScreen::checkTouchEvents(vector<int> touchEvents) {
+  if (touchEvents[2] == 0) {
+    return ;
+  }
+
+  // Todo: Update touchInput to byref
+  TouchInput::eventProcessed();
+  touchEvents[2] = 0;
+
   for(vector<UIObject>::size_type i = 0; i != ScanScreen::uiObjects.size(); i++) {
     if (ScanScreen::uiObjects.at(i).collisionDetection(touchEvents[0], touchEvents[1])) {
       ScanScreen::uiObjects.at(i).triggerClickEvent();
     }
+  }
+}
+
+void ScanScreen::btnUp() {
+  if (ScanScreen::selectedListItem <= 0) {
+    ScanScreen::selectedListItem = 0;
+    if (ScanScreen::listOffset >= 1) {
+      ScanScreen::listOffset--;
+    } else {
+      ScanScreen::listOffset = 0;
+    }
+  } else {
+    ScanScreen::selectedListItem--;
+  }
+}
+
+void ScanScreen::btnSelect() {
+
+}
+
+void ScanScreen::btnDown() {
+  if (ScanScreen::selectedListItem >= MAX_WIFI_LIST) {
+    ScanScreen::selectedListItem = MAX_WIFI_LIST;
+    if (ScanScreen::listOffset < cellList.size() - MAX_WIFI_LIST) {
+      ScanScreen::listOffset++;
+    }
+  } else {
+    ScanScreen::selectedListItem++;
   }
 }
 

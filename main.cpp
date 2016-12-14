@@ -14,8 +14,6 @@
 #include "touchinput.h"
 #include "cli.h"
 
-#define MAX_WIFI_LIST    12
-
 using namespace std;
 
 WINDOW * maintty;
@@ -43,9 +41,13 @@ void *UpdateWindow(void *threadID) {
       // string tmp = CLI::convertInt(touchEvents[0]);
       // tmp += ", ";
       // tmp += CLI::convertInt(touchEvents[1]);
-      // mvaddstr(2, 36, (string("X,Y: ") + string(tmp)).c_str());
+      // tmp += ", ";
+      // tmp += CLI::convertInt(touchEvents[2]);
+      // mvaddstr(2, 36, (string("X,Y,U: ") + string(tmp)).c_str());
 
       refresh();
+      usleep(1000000);
+   // usleep(3000000);
     }
     
     struct winsize w;
@@ -68,6 +70,9 @@ void setupWindow() {
   init_pair(3, COLOR_CYAN, COLOR_RED); // Exit Background
   init_pair(4, COLOR_GREEN, COLOR_RED); // Exit text
   init_pair(5, COLOR_WHITE, COLOR_BLUE); // Buttons
+
+  init_pair(6, COLOR_GREEN, COLOR_BLUE); // Selected Item
+  init_pair(7, COLOR_WHITE, COLOR_BLUE); // Selected Wifi Name
   
   attron(COLOR_PAIR(1));
   box(maintty, '|', '-');

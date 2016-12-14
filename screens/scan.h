@@ -4,10 +4,11 @@
 #include <vector>
 
 #include "../uiobj.h"
+#include "../wificell.h"
 
 using namespace std;
 
-#define MAX_WIFI_LIST    12
+#define MAX_WIFI_LIST    11
 
 class ScanScreen
 {
@@ -18,14 +19,20 @@ class ScanScreen
     static WINDOW * maintty;
 
   private:
+    static void * scanArea(void *threadID);
     static void drawBorder();
     static void generateUIObjects();
     static vector<UIObject> uiObjects;
     static void checkTouchEvents(vector<int> touchEvents);
+    static int listOffset;
+    static int selectedListItem;
+    static vector<WifiCell> cellList;
     static void btnExit();
+    static void btnUp();
+    static void btnSelect();
+    static void btnDown();
+    static int scanState;
 
 };
-
-
 #endif
 
