@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <functional>
 
 using namespace std;
 
@@ -10,12 +11,15 @@ class UIObject
 {
   public:
     UIObject(string uiName, int x1, int y1, int x2, int y2);
+    UIObject(string uiName, int x1, int y1, int x2, int y2, function<void()> clickEvent);
     bool collisionDetection(int x, int y);
     int x1;
     int y1;
     int x2;
     int y2;
     string uiName;
+    function<void()> clickEvent;
+    void triggerClickEvent();
 };
 
 #endif

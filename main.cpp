@@ -40,10 +40,10 @@ void *UpdateWindow(void *threadID) {
       ScanScreen::updateWindow(touchEvents);
 
       //Some debug stuff
-      string tmp = CLI::convertInt(touchEvents[0]);
-      tmp += ", ";
-      tmp += CLI::convertInt(touchEvents[1]);
-      mvaddstr(2, 36, (string("X,Y: ") + string(tmp)).c_str());
+      // string tmp = CLI::convertInt(touchEvents[0]);
+      // tmp += ", ";
+      // tmp += CLI::convertInt(touchEvents[1]);
+      // mvaddstr(2, 36, (string("X,Y: ") + string(tmp)).c_str());
 
       refresh();
     }

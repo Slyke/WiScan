@@ -2,6 +2,6 @@
  
 # Replace with makefile
  
-# rm wiscan
+# rm wiscan.so
  
-g++ cli.cpp wifilist.cpp touchinput.cpp uiobj.cpp wificell.cpp screens/scan.cpp main.cpp -o wiscan.so -lncursesw -lcurses -lncurses -lpthread 
+g++ -std=c++11 cli.cpp wifilist.cpp touchinput.cpp uiobj.cpp wificell.cpp screens/scan.cpp main.cpp -o wiscan.so -lncursesw -lcurses -lncurses -lpthread 
