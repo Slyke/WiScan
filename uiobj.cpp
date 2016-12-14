@@ -16,7 +16,7 @@ UIObject::UIObject(string uiName, int x1, int y1, int x2, int y2) {
 }
 
 bool UIObject::collisionDetection(int x, int y) {
-  if (x >= this->x1 && x <= x2 && this->y1 >= y && this->y2 <= y) {
+  if (x >= this->x1 && x <= this->x2 && this->y1 >= y && this->y2 <= y) {
     return true;
   }
   return false;

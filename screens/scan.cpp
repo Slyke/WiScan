@@ -4,6 +4,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <math.h>
+#include <cstdlib>
 
 #include "../wificell.h"
 #include "../wifilist.h"
@@ -24,6 +25,7 @@ void ScanScreen::updateWindow(vector<int> touchEvents) {
     clear();
     ScanScreen::drawBorder();
 
+    ScanScreen::checkTouchEvents(touchEvents);
     ScanScreen::generateUIObjects();
 
     WifiList * wifiList = new WifiList();
@@ -54,11 +56,40 @@ void ScanScreen::updateWindow(vector<int> touchEvents) {
 }
 
 void ScanScreen::generateUIObjects() {
-  for(vector<string>::size_type i = 0; i != ScanScreen::uiObjects.size(); i++) {
-    delete ScanScreen::uiObjects[i];
-  }
+  // Possibly needed to avoid memory leak.
+  //for(vector<UIObject>::size_type i = 0; i != ScanScreen::uiObjects.size(); i++) {
+  //  delete ScanScreen::uiObjects[i];
+  //}
+
+  ScanScreen::uiObjects.clear();
 
   ScanScreen::uiObjects.push_back(UIObject("exit", 221, 3386, 731, 3722));
+}
+
+void ScanScreen::checkTouchEvents(vector<int> touchEvents) {
+  for(vector<UIObject>::size_type i = 0; i != ScanScreen::uiObjects.size(); i++) {
+
+    string tmp1 = CLI::convertInt(ScanScreen::uiObjects.at(i).x1);
+    string tmp2 = CLI::convertInt(ScanScreen::uiObjects.at(i).y1);
+    mvaddstr(4, 36, (string(tmp1) + " " + string(tmp2).c_str()).c_str());
+
+    string tmp3 = CLI::convertInt(ScanScreen::uiObjects.at(i).x2);
+    string tmp4 = CLI::convertInt(ScanScreen::uiObjects.at(i).y2);
+    mvaddstr(5, 36, (string(tmp3) + " " + string(tmp4).c_str()).c_str());
+
+    mvaddstr(7, 36, ScanScreen::uiObjects.at(i).collisionDetection(touchEvents[0], touchEvents[1]) ? "true" : "false");
+
+    if (ScanScreen::uiObjects.at(i).collisionDetection(touchEvents[0], touchEvents[1])) {
+      mvaddstr(8, 36, "REKTCIT");
+      ScanScreen::btnExit();
+    }
+  }
+}
+
+void ScanScreen::btnExit() {
+  delwin(ScanScreen::maintty);
+  endwin();
+  exit(0);
 }
 
 void ScanScreen::drawExit() {

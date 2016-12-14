@@ -40,9 +40,9 @@ void *UpdateWindow(void *threadID) {
       ScanScreen::updateWindow(touchEvents);
 
       //Some debug stuff
-      string tmp = CLI::convertInt(touch[0]);
+      string tmp = CLI::convertInt(touchEvents[0]);
       tmp += ", ";
-      tmp += CLI::convertInt(touch[1]);
+      tmp += CLI::convertInt(touchEvents[1]);
       mvaddstr(2, 36, (string("X,Y: ") + string(tmp)).c_str());
 
       refresh();
@@ -88,9 +88,9 @@ int main (void)
   }
   if (has_colors() == FALSE)	{
     endwin();
-		fprintf(stderr, "Your terminal does not support color\n");
-		exit(1);
-	}
+    fprintf(stderr, "Your terminal does not support color\n");
+    exit(1);
+  }
   setupWindow();
 
   mvaddstr(8, 8, "Setting up and Getting the list...");
