@@ -48,7 +48,8 @@ void *UpdateWindow(void *threadID) {
       counter++;
       tmp += CLI::convertInt(counter);
       mvaddstr(2, 32, (string("X,Y,U,C: ") + string(tmp)).c_str());
-
+      refresh();
+      
       usleep(1000000);
     }
     

@@ -21,6 +21,12 @@ const int btnUpArrowPosY = 5;
 const int btnSelectPosY = 13;
 const int btnDownArrowPosY = 21;
 
+const int characterPixelSize = 50;
+const int wifiRowCount = 2;
+const int screenStartingBoundX = 1344;
+const int screenEndingBoundX = 3743;
+const int screenStartingBoundY = 466;
+
 int ScanScreen::listOffset = 0;
 int ScanScreen::selectedListItem = -1;
 int ScanScreen::scanState = -1;
@@ -86,6 +92,8 @@ void ScanScreen::updateWindow(vector<int> touchEvents) {
         mvaddstr(((3 * (j + 1)) + 1), 2, ScanScreen::cellList[i].getLinkQuality().c_str());
       }
 
+      // ScanScreen::uiObjects.push_back(UIObject((string("wifiSignal") + CLI::convertInt(j)), screenStartingBoundX, (screenStartingBoundY + (j * characterPixelSize)), screenEndingBoundX, ((screenStartingBoundY + (j * characterPixelSize) * 2)), &ScanScreen::btnClickNetwork));
+
     }
 
     drawControls();
@@ -123,6 +131,10 @@ void ScanScreen::checkTouchEvents(vector<int> touchEvents) {
       ScanScreen::uiObjects.at(i).triggerClickEvent();
     }
   }
+}
+
+void ScanScreen::btnClickNetwork() {
+
 }
 
 void ScanScreen::btnUp() {
