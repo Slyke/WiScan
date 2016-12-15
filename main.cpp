@@ -20,6 +20,7 @@ WINDOW * maintty;
 bool appRunning = true;
 
 int currentScreen = 0;
+int counter = 0;
 
 void * checkTouchEvents(void *threadID) {
   while (appRunning) {
@@ -38,16 +39,17 @@ void *UpdateWindow(void *threadID) {
       ScanScreen::updateWindow(touchEvents);
 
       //Some debug stuff
-      // string tmp = CLI::convertInt(touchEvents[0]);
-      // tmp += ", ";
-      // tmp += CLI::convertInt(touchEvents[1]);
-      // tmp += ", ";
-      // tmp += CLI::convertInt(touchEvents[2]);
-      // mvaddstr(2, 36, (string("X,Y,U: ") + string(tmp)).c_str());
+      string tmp = CLI::convertInt(touchEvents[0]);
+      tmp += ", ";
+      tmp += CLI::convertInt(touchEvents[1]);
+      tmp += ", ";
+      tmp += CLI::convertInt(touchEvents[2]);
+      tmp += ", ";
+      counter++;
+      tmp += CLI::convertInt(counter);
+      mvaddstr(2, 32, (string("X,Y,U,C: ") + string(tmp)).c_str());
 
-      refresh();
       usleep(1000000);
-   // usleep(3000000);
     }
     
     struct winsize w;

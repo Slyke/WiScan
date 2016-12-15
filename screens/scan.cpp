@@ -62,28 +62,28 @@ void ScanScreen::updateWindow(vector<int> touchEvents) {
 
     mvaddstr(1, 2, "Wifi List: (Press to Select).");
     mvaddstr(1, 36, (string("Total in Range: ") + string(CLI::convertInt(ScanScreen::cellList.size()))).c_str());
-
-    for(vector<string>::size_type i = ScanScreen::listOffset; i <= ScanScreen::cellList.size() && i <= (MAX_WIFI_LIST - ScanScreen::listOffset); i++) {
+    int j = 0;
+    for(vector<string>::size_type i = ScanScreen::listOffset; i < ScanScreen::cellList.size() && j <= MAX_WIFI_LIST; i++, j++) {
       string tmpWifiMAC = "(" + ScanScreen::cellList[i].getMAC() + ") ";
       int tmpWifiLength = tmpWifiMAC.size();
       string tmpWifiName = " - " + ScanScreen::cellList[i].getESSID();
 
-      if (ScanScreen::selectedListItem == i) {
+      if (ScanScreen::selectedListItem == j) {
         attron(COLOR_PAIR(6));
-        mvaddstr((3 * (i + 1)), 2, tmpWifiMAC.c_str());
+        mvaddstr((3 * (j + 1)), 2, tmpWifiMAC.c_str());
         attroff(COLOR_PAIR(6));
         attron(COLOR_PAIR(7));
-        mvaddstr((3 * (i + 1)), tmpWifiLength + 1, tmpWifiName.c_str());
+        mvaddstr((3 * (j + 1)), tmpWifiLength + 1, tmpWifiName.c_str());
         attroff(COLOR_PAIR(7));
         attron(COLOR_PAIR(6));
-        mvaddstr(((3 * (i + 1)) + 1), 2, ScanScreen::cellList[i].getLinkQuality().c_str());
+        mvaddstr(((3 * (j + 1)) + 1), 2, ScanScreen::cellList[i].getLinkQuality().c_str());
         attroff(COLOR_PAIR(6));
       } else {
-        mvaddstr((3 * (i + 1)), 2, tmpWifiMAC.c_str());
+        mvaddstr((3 * (j + 1)), 2, tmpWifiMAC.c_str());
         attron(COLOR_PAIR(2));
-        mvaddstr((3 * (i + 1)), tmpWifiLength + 1, tmpWifiName.c_str());
+        mvaddstr((3 * (j + 1)), tmpWifiLength + 1, tmpWifiName.c_str());
         attroff(COLOR_PAIR(2));
-        mvaddstr(((3 * (i + 1)) + 1), 2, ScanScreen::cellList[i].getLinkQuality().c_str());
+        mvaddstr(((3 * (j + 1)) + 1), 2, ScanScreen::cellList[i].getLinkQuality().c_str());
       }
 
     }

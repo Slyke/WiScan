@@ -9,6 +9,7 @@
 
 using namespace std;
 
+
 #define EVENT_DEVICE    "/dev/input/event4"
 #define EVENT_TYPE      EV_ABS
 #define EVENT_CODE_X    ABS_X
