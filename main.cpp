@@ -68,6 +68,8 @@ void setupWindow() {
 
   start_color();
 
+  init_color(COLOR_BLACK, 0, 0, 0);
+
   init_pair(1, COLOR_BLUE, COLOR_BLACK); // Border color
   init_pair(2, COLOR_GREEN, COLOR_BLACK); // Wifi Name
   init_pair(3, COLOR_CYAN, COLOR_RED); // Exit Background

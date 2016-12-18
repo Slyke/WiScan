@@ -31,7 +31,7 @@ class ScanScreen
     static void btnUp();
     static void btnSelect();
     static void btnDown();
-    static void btnClickNetwork();
+    static void btnClickNetwork(int clickIndex);
     static int scanState;
 
 };

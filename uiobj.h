@@ -12,6 +12,7 @@ class UIObject
   public:
     UIObject(string uiName, int x1, int y1, int x2, int y2);
     UIObject(string uiName, int x1, int y1, int x2, int y2, function<void()> clickEvent);
+    // UIObject(string uiName, int x1, int y1, int x2, int y2, function<void()> clickEvent, int clickParam);
     bool collisionDetection(int x, int y);
     int x1;
     int y1;
@@ -20,6 +21,7 @@ class UIObject
     string uiName;
     function<void()> clickEvent;
     void triggerClickEvent();
+    // int clickParam;
 };
 
 #endif
