@@ -18,8 +18,6 @@ using namespace std;
 WINDOW * maintty;
 bool appRunning = true;
 
-int counter = 0;
-
 void * checkTouchEvents(void *threadID) {
   while (appRunning) {
     TouchInput::updateTouchInputs();
@@ -80,9 +78,10 @@ int main (void)
     fprintf(stderr, "Your terminal does not support color\n");
     exit(1);
   }
+  TouchInput::findTouchDevice();
   setupWindow();
 
-  mvaddstr(8, 8, "Setting up and Getting the list...");
+  mvaddstr(8, 8, "Setting up and getting the list...");
   refresh();
 
   pthread_t uiThread;

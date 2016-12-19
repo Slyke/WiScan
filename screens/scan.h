@@ -9,7 +9,7 @@
 
 using namespace std;
 
-#define MAX_WIFI_LIST    11
+#define MAX_WIFI_LIST    9
 
 class ScanScreen
 {
@@ -17,6 +17,7 @@ class ScanScreen
     static void updateWindow(vector<int> touchEvents);
     static void drawExit();
     static void drawControls();
+    static void drawOptions();
     static WINDOW * maintty;
 
   private:

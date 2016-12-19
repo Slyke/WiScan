@@ -10,8 +10,6 @@
 
 using namespace std;
 
-#define MAX_WIFI_LIST    11
-
 class CellScreen
 {
   public:
@@ -25,7 +23,9 @@ class CellScreen
     static void drawBorder();
     static void checkTouchEvents(vector<int> touchEvents);
     static void btnExit();
+    static void btnBack();
     static void drawExit();
+    static void drawBack();
     static void drawControls();
     
 

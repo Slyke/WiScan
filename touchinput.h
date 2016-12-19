@@ -11,10 +11,13 @@ class TouchInput
     static void updateTouchInputs();
     static vector<int> getTouchInput();
     static void eventProcessed();
+    static void findTouchDevice();
+    static string touchDevice;
 
   private:
     static void drawBorder();
     static vector<int> touchEvent;
+    
 
 };
 

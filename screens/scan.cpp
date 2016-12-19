@@ -14,6 +14,7 @@
 #include "../uiobj.h"
 #include "../touchinput.h" // Todo: Update touchInput to byref
 #include "scan.h"
+#include "cell.h"
 #include "screens.h"
 
 using namespace std;
@@ -100,8 +101,9 @@ void ScanScreen::updateWindow(vector<int> touchEvents) {
 
     }
 
-    drawControls();
-    drawExit();
+    ScanScreen::drawControls();
+    ScanScreen::drawOptions();
+    ScanScreen::drawExit();
 
     refresh();
 }
@@ -119,6 +121,7 @@ void ScanScreen::generateUIObjects() {
   ScanScreen::uiObjects.push_back(UIObject("btnDown", 228, 2214, 802, 2549, &ScanScreen::btnDown));
 
   ScanScreen::uiObjects.push_back(UIObject("btnExit", 221, 3386, 731, 3722, &ScanScreen::btnExit));
+  // ScanScreen::uiObjects.push_back(UIObject("btnBack", 3012, 3386, 3799, 3722, &ScanScreen::btnOptions));
 }
 
 void ScanScreen::checkTouchEvents(vector<int> touchEvents) {
@@ -155,7 +158,23 @@ void ScanScreen::btnUp() {
 }
 
 void ScanScreen::btnSelect() {
-  ScreenHandler::changeScreen(1);
+  if (ScanScreen::selectedListItem > -1) {
+    string wifiMAC = "";
+    int j = 0;
+
+    for(vector<string>::size_type i = ScanScreen::listOffset; i < ScanScreen::cellList.size() && j <= MAX_WIFI_LIST; i++, j++) {
+      if (ScanScreen::selectedListItem == j) {
+        wifiMAC = ScanScreen::cellList[i].getMAC();
+        break;
+      }
+    }
+
+    if (wifiMAC != "") {
+      CellScreen::cellMAC = wifiMAC;
+      ScreenHandler::changeScreen(1);
+    }
+  }
+  
 }
 
 void ScanScreen::btnDown() {
@@ -197,6 +216,30 @@ void ScanScreen::drawExit() {
     attron(COLOR_PAIR(4));
     mvaddstr(exitPosY, exitPosX, "EXIT");
     attroff(COLOR_PAIR(4));
+}
+
+void ScanScreen::drawOptions() {
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+
+    vector<string> optionsButton;
+    optionsButton.push_back(" ----------- ");
+    optionsButton.push_back("|           |");
+    optionsButton.push_back("|  XXXXXXX  |");
+    optionsButton.push_back("|           |");
+    optionsButton.push_back(" ----------- ");
+
+    for(unsigned int i = 0; i < optionsButton.size(); i++ ) {
+      attron(COLOR_PAIR(5));
+      mvaddstr((w.ws_row - optionsButton.size() + i) - 1, 1, optionsButton[i].c_str());
+      attroff(COLOR_PAIR(5));
+    }
+
+    int optionsPosX = 4;
+    int optionsPosY = (w.ws_row - optionsButton.size()) + (floor(optionsButton.size() / 2) - 1);
+    attron(COLOR_PAIR(5));
+    mvaddstr(optionsPosY, optionsPosX, "OPTIONS");
+    attroff(COLOR_PAIR(5));
 }
 
 void ScanScreen::drawControls() {
