@@ -18,6 +18,8 @@ class WifiCell
     string getEncryption();
     int getLinkQualityLower();
     int getLinkQualityMax();
+    void setLinkQuality(string newLinkQuality);
+    void setSignalLevel(string newSignalStrength);
 
   private:
     string cellID;
@@ -28,6 +30,7 @@ class WifiCell
     string linkQuality;
     string signalLevel;
     string encryption;
+
 };
 
 #endif

@@ -176,6 +176,14 @@ void ScanScreen::btnSelect() {
 
     if (wifiMAC != "") {
       CellScreen::cellMAC = wifiMAC;
+      clear();
+      ScanScreen::drawBorder();
+      mvaddstr(18, 17, " -------------- ");
+      mvaddstr(18, 18, "|              |");
+      mvaddstr(18, 19, "|  Loading...  |");
+      mvaddstr(18, 20, "|              |");
+      mvaddstr(18, 21, " -------------- ");
+      refresh();
       ScreenHandler::changeScreen(1);
     }
   }

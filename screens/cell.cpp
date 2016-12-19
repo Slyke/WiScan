@@ -31,11 +31,18 @@ void * CellScreen::scanArea(void *threadID) {
     wifiList->wifiScan();
     cellList = wifiList->getWifiList();
 
+    bool found = false;
     for(vector<WifiCell>::size_type i = 0; i < cellList.size(); i++) {
       if (cellList[i].getMAC() == CellScreen::cellMAC) {
         CellScreen::scanningCell = cellList[i];
+        found = true;
         break;
       }
+    }
+
+    if (!found) {
+      CellScreen::scanningCell.setSignalLevel("-256");
+      CellScreen::scanningCell.setLinkQuality(string("0/" + CLI::convertInt(CellScreen::scanningCell.getLinkQualityMax())));
     }
 
     delete wifiList;
@@ -63,13 +70,13 @@ void CellScreen::updateWindow(vector<int> touchEvents) {
 
     int level = (int)(( (float)CellScreen::scanningCell.getLinkQualityLower() / (float)CellScreen::scanningCell.getLinkQualityMax() ) * 35);
 
-    mvaddstr(2, 40, "dBm");
+    mvaddstr(1, 40, "dBm");
 
-    mvaddstr(3, 37, CellScreen::scanningCell.getSignalLevel().c_str());
-    CellScreen::drawGraph(37, 4, 34, level);
+    mvaddstr(2, 37, CellScreen::scanningCell.getSignalLevel().c_str());
+    CellScreen::drawGraph(37, 3, 35, level);
 
-    mvaddstr(3, 42, CellScreen::scanningCell.getSignalLevel().c_str());
-    CellScreen::drawGraph(42, 4, 34, level);
+    mvaddstr(2, 42, CellScreen::scanningCell.getSignalLevel().c_str());
+    CellScreen::drawGraph(42, 3, 35, level);
 
     mvaddstr(3, 2,"Wifi Name :        ");
     mvaddstr(4, 2,"MAC Address :      ");

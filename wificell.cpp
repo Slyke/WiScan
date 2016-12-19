@@ -70,4 +70,13 @@ int WifiCell::getLinkQualityMax() {
   return atoi(upper.c_str());
 }
 
+void WifiCell::setLinkQuality(string newLinkQuality) {
+  linkQuality = newLinkQuality;
+}
+
+void WifiCell::setSignalLevel(string newSignalStrength) {
+  signalLevel = newSignalStrength;
+}
+
+
 
