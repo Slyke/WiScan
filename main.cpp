@@ -55,7 +55,8 @@ void setupWindow() {
 
   init_pair(6, COLOR_GREEN, COLOR_BLUE); // Selected Item
   init_pair(7, COLOR_WHITE, COLOR_BLUE); // Selected Wifi Name
-  init_pair(8, COLOR_CYAN, COLOR_BLACK); // Exit Background
+  init_pair(8, COLOR_CYAN, COLOR_BLACK); //
+  init_pair(9, COLOR_RED, COLOR_BLACK); // Warning
   
   attron(COLOR_PAIR(1));
   box(maintty, '|', '-');

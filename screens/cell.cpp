@@ -63,19 +63,36 @@ void CellScreen::updateWindow(vector<int> touchEvents) {
 
     int level = (int)(( (float)CellScreen::scanningCell.getLinkQualityLower() / (float)CellScreen::scanningCell.getLinkQualityMax() ) * 35);
 
-    mvaddstr(37, 1, CellScreen::scanningCell.getSignalLevel().c_str());
-    CellScreen::drawGraph(37, 3, 35, level);
+    mvaddstr(2, 40, "dBm");
 
-    mvaddstr(42, 2, CellScreen::scanningCell.getSignalLevel().c_str());
-    CellScreen::drawGraph(42, 3, 35, level);
+    mvaddstr(3, 37, CellScreen::scanningCell.getSignalLevel().c_str());
+    CellScreen::drawGraph(37, 4, 34, level);
+
+    mvaddstr(3, 42, CellScreen::scanningCell.getSignalLevel().c_str());
+    CellScreen::drawGraph(42, 4, 34, level);
+
+    mvaddstr(3, 2,"Wifi Name :        ");
+    mvaddstr(4, 2,"MAC Address :      ");
+    mvaddstr(5, 2,"Scanning Devices : ");
+    mvaddstr(6, 2,"Logging to File :  ");
+
+    attron(COLOR_PAIR(2));
+    mvaddstr(3, 16, CellScreen::scanningCell.getESSID().c_str());
+    mvaddstr(4, 16, CellScreen::scanningCell.getMAC().c_str());
+    mvaddstr(5, 21, "wlan0 wlan0");
+    attroff(COLOR_PAIR(2));
+
+    attron(COLOR_PAIR(9));
+    mvaddstr(7, 4, "None");
+    attroff(COLOR_PAIR(9));
 
     // mvaddstr(20, 5, CellScreen::cellMAC.c_str());
     // mvaddstr(21, 5, CellScreen::scanningCell.getMAC().c_str());
     // mvaddstr(22, 5, CellScreen::scanningCell.getSignalLevel().c_str());
-    mvaddstr(23, 5, CellScreen::scanningCell.getLinkQuality().c_str());
+    // mvaddstr(23, 5, CellScreen::scanningCell.getLinkQuality().c_str());
     // mvaddstr(24, 5, CLI::convertInt(CellScreen::scanningCell.getLinkQualityLower()).c_str());
     // mvaddstr(25, 5, CLI::convertInt(CellScreen::scanningCell.getLinkQualityMax()).c_str());
-    mvaddstr(26, 5, CLI::convertInt(level).c_str());
+    // mvaddstr(26, 5, CLI::convertInt(level).c_str());
 
     // drawControls();
     CellScreen::drawExit();
