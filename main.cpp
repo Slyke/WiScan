@@ -12,14 +12,12 @@
 
 #include "screens/screens.h"
 #include "touchinput.h"
-#include "cli.h"
 
 using namespace std;
 
 WINDOW * maintty;
 bool appRunning = true;
 
-int currentScreen = 0;
 int counter = 0;
 
 void * checkTouchEvents(void *threadID) {
@@ -31,27 +29,8 @@ void * checkTouchEvents(void *threadID) {
 
 void *UpdateWindow(void *threadID) {
 
-  ScanScreen::maintty = maintty;
-
   while (appRunning) {
-    if (currentScreen == 0) {
-      vector<int> touchEvents = TouchInput::getTouchInput();
-      ScanScreen::updateWindow(touchEvents);
-
-      //Some debug stuff
-      string tmp = CLI::convertInt(touchEvents[0]);
-      tmp += ", ";
-      tmp += CLI::convertInt(touchEvents[1]);
-      tmp += ", ";
-      tmp += CLI::convertInt(touchEvents[2]);
-      tmp += ", ";
-      counter++;
-      tmp += CLI::convertInt(counter);
-      mvaddstr(2, 32, (string("X,Y,U,C: ") + string(tmp)).c_str());
-      refresh();
-      
-      usleep(1000000);
-    }
+    ScreenHandler::updateScreen(maintty);
     
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);

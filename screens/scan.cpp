@@ -14,6 +14,7 @@
 #include "../uiobj.h"
 #include "../touchinput.h" // Todo: Update touchInput to byref
 #include "scan.h"
+#include "screens.h"
 
 using namespace std;
 
@@ -154,7 +155,7 @@ void ScanScreen::btnUp() {
 }
 
 void ScanScreen::btnSelect() {
-
+  ScreenHandler::changeScreen(1);
 }
 
 void ScanScreen::btnDown() {

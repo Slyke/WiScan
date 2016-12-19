@@ -2,6 +2,7 @@
 #define __SCAN_SCREEN_H_INCLUDED__ 
 
 #include <vector>
+#include <curses.h>
 
 #include "../uiobj.h"
 #include "../wificell.h"
