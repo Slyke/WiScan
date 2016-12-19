@@ -15,6 +15,7 @@
 #include "../touchinput.h" // Todo: Update touchInput to byref
 #include "scan.h"
 #include "cell.h"
+#include "options1.h"
 #include "screens.h"
 
 using namespace std;
@@ -121,7 +122,7 @@ void ScanScreen::generateUIObjects() {
   ScanScreen::uiObjects.push_back(UIObject("btnDown", 228, 2214, 802, 2549, &ScanScreen::btnDown));
 
   ScanScreen::uiObjects.push_back(UIObject("btnExit", 221, 3386, 731, 3722, &ScanScreen::btnExit));
-  // ScanScreen::uiObjects.push_back(UIObject("btnBack", 3012, 3386, 3799, 3722, &ScanScreen::btnOptions));
+  ScanScreen::uiObjects.push_back(UIObject("btnBack", 3012, 3386, 3799, 3722, &ScanScreen::btnOptions));
 }
 
 void ScanScreen::checkTouchEvents(vector<int> touchEvents) {
@@ -155,6 +156,10 @@ void ScanScreen::btnUp() {
   } else {
     ScanScreen::selectedListItem--;
   }
+}
+
+void ScanScreen::btnOptions() {
+  ScreenHandler::changeScreen(2);
 }
 
 void ScanScreen::btnSelect() {

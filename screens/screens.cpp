@@ -37,6 +37,9 @@ void ScreenHandler::updateScreen(WINDOW * maintty) {
   } else if (currentScreen == 1) {
     CellScreen::maintty = maintty;
     CellScreen::updateWindow(touchEvents);
+  } else if (currentScreen == 2) {
+    Options1::maintty = maintty;
+    Options1::updateWindow(touchEvents);
   }
 
   usleep(1000000); // Refresh rate

@@ -3,6 +3,7 @@
 
 #include "scan.h"
 #include "cell.h"
+#include "options1.h"
 
 using namespace std;
 
