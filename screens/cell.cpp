@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <math.h>
 
+#include <pthread.h>
+
 #include "../wificell.h"
 #include "../wifilist.h"
 #include "../cli.h"
@@ -14,8 +16,33 @@
 #include "screens.h"
 
 vector<UIObject> CellScreen::uiObjects;
+
 WINDOW * CellScreen::maintty;
 string CellScreen::cellMAC = "";
+WifiCell CellScreen::scanningCell;
+int CellScreen::scanState = -1;
+
+void * CellScreen::scanArea(void *threadID) {
+  if (CellScreen::scanState == -1 || CellScreen::scanState == 0) {
+    vector<WifiCell> cellList;
+    CellScreen::scanState = 1;
+    WifiList * wifiList = new WifiList();
+    
+    wifiList->wifiScan();
+    cellList = wifiList->getWifiList();
+
+    for(vector<WifiCell>::size_type i = 0; i < cellList.size(); i++) {
+      if (cellList[i].getMAC() == CellScreen::cellMAC) {
+        CellScreen::scanningCell = cellList[i];
+        break;
+      }
+    }
+
+    delete wifiList;
+    CellScreen::scanState = 0;
+  }
+
+}
 
 void CellScreen::updateWindow(vector<int> touchEvents) {
     clear();
@@ -24,7 +51,31 @@ void CellScreen::updateWindow(vector<int> touchEvents) {
     CellScreen::checkTouchEvents(touchEvents);
     CellScreen::generateUIObjects();
 
-    mvaddstr(20, 20, CellScreen::cellMAC.c_str());
+    if (CellScreen::scanState == 0) {
+      pthread_t scanThread;
+      int updateScans = pthread_create(&scanThread, NULL, CellScreen::scanArea, (void *)0);
+    } else if (CellScreen::scanState <= -1) {
+      pthread_t scanThread;
+      int updateScans = pthread_create(&scanThread, NULL, CellScreen::scanArea, (void *)0);
+      usleep(3000000);
+      return ;
+    }
+
+    int level = (int)(( (float)CellScreen::scanningCell.getLinkQualityLower() / (float)CellScreen::scanningCell.getLinkQualityMax() ) * 35);
+
+    mvaddstr(37, 1, CellScreen::scanningCell.getSignalLevel().c_str());
+    CellScreen::drawGraph(37, 3, 35, level);
+
+    mvaddstr(42, 2, CellScreen::scanningCell.getSignalLevel().c_str());
+    CellScreen::drawGraph(42, 3, 35, level);
+
+    // mvaddstr(20, 5, CellScreen::cellMAC.c_str());
+    // mvaddstr(21, 5, CellScreen::scanningCell.getMAC().c_str());
+    // mvaddstr(22, 5, CellScreen::scanningCell.getSignalLevel().c_str());
+    mvaddstr(23, 5, CellScreen::scanningCell.getLinkQuality().c_str());
+    // mvaddstr(24, 5, CLI::convertInt(CellScreen::scanningCell.getLinkQualityLower()).c_str());
+    // mvaddstr(25, 5, CLI::convertInt(CellScreen::scanningCell.getLinkQualityMax()).c_str());
+    mvaddstr(26, 5, CLI::convertInt(level).c_str());
 
     // drawControls();
     CellScreen::drawExit();
@@ -32,10 +83,26 @@ void CellScreen::updateWindow(vector<int> touchEvents) {
     refresh();
 }
 
+void CellScreen::drawGraph(int x, int y, int s, int d) {
+
+  mvaddstr(y, x, " -- ");
+  int j = 0;
+  for (int i = s; i > 0; i--, j++) {
+    mvaddstr(y + i, x, "|  |");
+
+    if (j < d) {
+      attron(COLOR_PAIR(7));
+      mvaddstr(y + i, x + 1, "  ");
+      attroff(COLOR_PAIR(7));
+    }
+  }
+  mvaddstr(y + s, x, " -- ");
+}
+
 void CellScreen::generateUIObjects() {
   // Possibly needed to avoid memory leak.
-  //for(vector<UIObject>::size_type i = 0; i != ScanScreen::uiObjects.size(); i++) {
-  //  delete ScanScreen::uiObjects[i];
+  //for(vector<UIObject>::size_type i = 0; i != CellScreen::uiObjects.size(); i++) {
+  //  delete CellScreen::uiObjects[i];
   //}
 
   CellScreen::uiObjects.clear();

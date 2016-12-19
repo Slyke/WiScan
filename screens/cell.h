@@ -19,7 +19,9 @@ class CellScreen
 
   private:
     static vector<UIObject> uiObjects;
+    static WifiCell scanningCell;
     static void generateUIObjects();
+    static void drawGraph(int x, int y, int s, int d);
     static void drawBorder();
     static void checkTouchEvents(vector<int> touchEvents);
     static void btnExit();
@@ -27,6 +29,8 @@ class CellScreen
     static void drawExit();
     static void drawBack();
     static void drawControls();
+    static int scanState;
+    static void * scanArea(void *threadID);
     
 
 };

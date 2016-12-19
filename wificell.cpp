@@ -19,6 +19,10 @@ WifiCell::WifiCell(const char* cellID, const char* ESSID, const char* channel, c
 
 }
 
+WifiCell::WifiCell() {
+
+}
+
 string WifiCell::getCellID() {
   return cellID;
 }
@@ -52,6 +56,18 @@ string WifiCell::getSignalLevel() {
 
 string WifiCell::getEncryption() {
   return encryption;
+}
+
+int WifiCell::getLinkQualityLower() {
+  string lower = WifiCell::getLinkQuality();
+  lower = lower.substr(0, lower.find("/"));
+  return atoi(lower.c_str());
+}
+
+int WifiCell::getLinkQualityMax() {
+  string upper = WifiCell::getLinkQuality();
+  upper = upper.substr(upper.find("/") + 1);
+  return atoi(upper.c_str());
 }
 
 

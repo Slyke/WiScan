@@ -7,6 +7,7 @@ class WifiCell
 {
   public:
     WifiCell(const char* cellID, const char* ESSID, const char* channel, const char* MAC, const char* frequency, const char* linkQuality, const char* signalLevel, const char* encryption);
+    WifiCell();
     string getCellID();
     string getESSID();
     string getChannel();
@@ -15,6 +16,8 @@ class WifiCell
     string getLinkQuality();
     string getSignalLevel();
     string getEncryption();
+    int getLinkQualityLower();
+    int getLinkQualityMax();
 
   private:
     string cellID;
