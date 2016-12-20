@@ -19,7 +19,9 @@ class CellScreen
 
   private:
     static vector<UIObject> uiObjects;
-    static WifiCell scanningCell;
+    static WifiCell scanningCellLeft;
+    static WifiCell scanningCellRight;
+    static void setupKeyboardEvents();
     static void generateUIObjects();
     static void drawGraph(int x, int y, int s, int d);
     static void drawBorder();

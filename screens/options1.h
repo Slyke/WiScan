@@ -24,6 +24,7 @@ class Options1
     static const string CMD_GETNETWORKINFO_MAC;
     static vector<UIObject> uiObjects;
     static void generateUIObjects();
+    static void setupKeyboardEvents();
     static void drawBorder();
     static void checkTouchEvents(vector<int> touchEvents);
     static void btnExit();
@@ -39,6 +40,7 @@ class Options1
     static string networkDetailsBCAST();
     static string networkDetailsMASK(string adapter);
     static string networkDetailsMASK();
+    
     
 
 };

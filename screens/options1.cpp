@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <math.h>
 
-
+#include "../keyboardwatch.h"
 #include "../cli.h"
 #include "../uiobj.h"
 #include "../touchinput.h" // Todo: Update touchInput to byref
@@ -22,9 +22,17 @@ const string Options1::CMD_GETNETWORKINFO_MAC = " | grep 'HWaddr' | awk '{print 
 vector<UIObject> Options1::uiObjects;
 WINDOW * Options1::maintty;
 
+void Options1::setupKeyboardEvents() {
+  KeyboardWatch::clearKeys();
+  KeyboardWatch::addKey(8, &Options1::btnBack); // Backspace
+  KeyboardWatch::addKey(KEY_LEFT, &Options1::btnBack);
+  KeyboardWatch::addKey(27, &Options1::btnExit); // Escape
+}
+
 void Options1::updateWindow(vector<int> touchEvents) {
     clear();
     Options1::drawBorder();
+    Options1::setupKeyboardEvents();
 
     Options1::checkTouchEvents(touchEvents);
     Options1::generateUIObjects();

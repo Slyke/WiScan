@@ -8,6 +8,7 @@
 
 #include <pthread.h>
 
+#include "../keyboardwatch.h"
 #include "../wificell.h"
 #include "../wifilist.h"
 #include "../cli.h"
@@ -52,12 +53,17 @@ void * ScanScreen::scanArea(void *threadID) {
 
 }
 
-void ScanScreen::updateWindow(vector<int> touchEvents) {
-    clear();
-    ScanScreen::drawBorder();
+void ScanScreen::setupKeyboardEvents() {
+  KeyboardWatch::clearKeys();
+  KeyboardWatch::addKey(KEY_DOWN, &ScanScreen::btnDown);
+  KeyboardWatch::addKey(KEY_UP, &ScanScreen::btnUp);
+  KeyboardWatch::addKey(13, &ScanScreen::btnSelect); // Enter
+  KeyboardWatch::addKey(KEY_RIGHT, &ScanScreen::btnSelect);
+  KeyboardWatch::addKey(32, &ScanScreen::btnOptions); // Space bar
+  KeyboardWatch::addKey(27, &ScanScreen::btnExit); // Escape
+}
 
-    ScanScreen::checkTouchEvents(touchEvents);
-    ScanScreen::generateUIObjects();
+void ScanScreen::updateWindow(vector<int> touchEvents) {
 
     if (ScanScreen::scanState == 0) {
       pthread_t scanThread;
@@ -68,6 +74,13 @@ void ScanScreen::updateWindow(vector<int> touchEvents) {
       usleep(3000000);
       return ;
     }
+
+    clear();
+    ScanScreen::drawBorder();
+    ScanScreen::setupKeyboardEvents();
+
+    ScanScreen::checkTouchEvents(touchEvents);
+    ScanScreen::generateUIObjects();
 
     mvaddstr(1, 2, "Wifi List: (Press to Select).");
     mvaddstr(1, 36, (string("Total in Range: ") + string(CLI::convertInt(ScanScreen::cellList.size()))).c_str());
@@ -163,6 +176,14 @@ void ScanScreen::btnOptions() {
 }
 
 void ScanScreen::btnSelect() {
+  clear();
+  ScanScreen::drawBorder();
+  mvaddstr(18, 17, " -------------- ");
+  mvaddstr(18, 18, "|              |");
+  mvaddstr(18, 19, "|  Loading...  |");
+  mvaddstr(18, 20, "|              |");
+  mvaddstr(18, 21, " -------------- ");
+  refresh();
   if (ScanScreen::selectedListItem > -1) {
     string wifiMAC = "";
     int j = 0;
@@ -176,14 +197,6 @@ void ScanScreen::btnSelect() {
 
     if (wifiMAC != "") {
       CellScreen::cellMAC = wifiMAC;
-      clear();
-      ScanScreen::drawBorder();
-      mvaddstr(18, 17, " -------------- ");
-      mvaddstr(18, 18, "|              |");
-      mvaddstr(18, 19, "|  Loading...  |");
-      mvaddstr(18, 20, "|              |");
-      mvaddstr(18, 21, " -------------- ");
-      refresh();
       ScreenHandler::changeScreen(1);
     }
   }

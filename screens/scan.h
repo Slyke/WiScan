@@ -21,6 +21,7 @@ class ScanScreen
     static WINDOW * maintty;
 
   private:
+    static void setupKeyboardEvents();
     static void * scanArea(void *threadID);
     static void drawBorder();
     static void generateUIObjects();

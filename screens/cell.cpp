@@ -14,13 +14,22 @@
 #include "../touchinput.h" // Todo: Update touchInput to byref
 #include "cell.h"
 #include "screens.h"
+#include "../keyboardwatch.h"
 
 vector<UIObject> CellScreen::uiObjects;
 
 WINDOW * CellScreen::maintty;
 string CellScreen::cellMAC = "";
-WifiCell CellScreen::scanningCell;
+WifiCell CellScreen::scanningCellLeft;
+WifiCell CellScreen::scanningCellRight;
 int CellScreen::scanState = -1;
+
+void CellScreen::setupKeyboardEvents() {
+  KeyboardWatch::clearKeys();
+  KeyboardWatch::addKey(8, &CellScreen::btnBack); // Backspace
+  KeyboardWatch::addKey(KEY_LEFT, &CellScreen::btnBack);
+  KeyboardWatch::addKey(27, &CellScreen::btnExit); // Escape
+}
 
 void * CellScreen::scanArea(void *threadID) {
   if (CellScreen::scanState == -1 || CellScreen::scanState == 0) {
@@ -34,15 +43,18 @@ void * CellScreen::scanArea(void *threadID) {
     bool found = false;
     for(vector<WifiCell>::size_type i = 0; i < cellList.size(); i++) {
       if (cellList[i].getMAC() == CellScreen::cellMAC) {
-        CellScreen::scanningCell = cellList[i];
+        CellScreen::scanningCellLeft = cellList[i];
+        CellScreen::scanningCellRight = cellList[i - 1];
         found = true;
         break;
       }
     }
 
     if (!found) {
-      CellScreen::scanningCell.setSignalLevel("-256");
-      CellScreen::scanningCell.setLinkQuality(string("0/" + CLI::convertInt(CellScreen::scanningCell.getLinkQualityMax())));
+      CellScreen::scanningCellLeft.setSignalLevel("-256");
+      CellScreen::scanningCellLeft.setLinkQuality(string("0/" + CLI::convertInt(CellScreen::scanningCellLeft.getLinkQualityMax())));
+      CellScreen::scanningCellRight.setSignalLevel("-256");
+      CellScreen::scanningCellRight.setLinkQuality(string("0/" + CLI::convertInt(CellScreen::scanningCellRight.getLinkQualityMax())));
     }
 
     delete wifiList;
@@ -68,15 +80,16 @@ void CellScreen::updateWindow(vector<int> touchEvents) {
       return ;
     }
 
-    int level = (int)(( (float)CellScreen::scanningCell.getLinkQualityLower() / (float)CellScreen::scanningCell.getLinkQualityMax() ) * 35);
+    int levelLeft = (int)(( (float)CellScreen::scanningCellLeft.getLinkQualityLower() / (float)CellScreen::scanningCellLeft.getLinkQualityMax() ) * 35);
+    int levelRight = (int)(( (float)CellScreen::scanningCellRight.getLinkQualityLower() / (float)CellScreen::scanningCellRight.getLinkQualityMax() ) * 35);
 
     mvaddstr(1, 40, "dBm");
 
-    mvaddstr(2, 37, CellScreen::scanningCell.getSignalLevel().c_str());
-    CellScreen::drawGraph(37, 3, 35, level);
+    mvaddstr(2, 37, CellScreen::scanningCellLeft.getSignalLevel().c_str());
+    CellScreen::drawGraph(37, 3, 35, levelLeft);
 
-    mvaddstr(2, 42, CellScreen::scanningCell.getSignalLevel().c_str());
-    CellScreen::drawGraph(42, 3, 35, level);
+    mvaddstr(2, 42, CellScreen::scanningCellRight.getSignalLevel().c_str());
+    CellScreen::drawGraph(42, 3, 35, levelRight);
 
     mvaddstr(3, 2,"Wifi Name :        ");
     mvaddstr(4, 2,"MAC Address :      ");
@@ -84,8 +97,8 @@ void CellScreen::updateWindow(vector<int> touchEvents) {
     mvaddstr(6, 2,"Logging to File :  ");
 
     attron(COLOR_PAIR(2));
-    mvaddstr(3, 16, CellScreen::scanningCell.getESSID().c_str());
-    mvaddstr(4, 16, CellScreen::scanningCell.getMAC().c_str());
+    mvaddstr(3, 16, CellScreen::scanningCellLeft.getESSID().c_str());
+    mvaddstr(4, 16, CellScreen::scanningCellLeft.getMAC().c_str());
     mvaddstr(5, 21, "wlan0 wlan0");
     attroff(COLOR_PAIR(2));
 

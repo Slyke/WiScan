@@ -12,6 +12,7 @@
 
 #include "screens/screens.h"
 #include "touchinput.h"
+#include "keyboardwatch.h"
 
 using namespace std;
 
@@ -23,6 +24,10 @@ void * checkTouchEvents(void *threadID) {
     TouchInput::updateTouchInputs();
     usleep(20000);
   }
+}
+
+void *watchKeyboardEvents(void *threadID) {
+  KeyboardWatch::checkPresses();
 }
 
 void *UpdateWindow(void *threadID) {
@@ -88,9 +93,11 @@ int main (void)
 
   pthread_t uiThread;
   pthread_t touchThread;
+  pthread_t keyboardThread;
 
   int uiUpdate = pthread_create(&uiThread, NULL, UpdateWindow, (void *)0);
   int uiTouchEvent = pthread_create(&touchThread, NULL, checkTouchEvents, (void *)0);
+  int keyboardWatch = pthread_create(&keyboardThread, NULL, watchKeyboardEvents, (void *)0);
 
   while (appRunning) {
     sleep(20); // Let the other threads run the execution now.
