@@ -3,6 +3,7 @@
 #include <string>
 
 #include "wificell.h"
+#include "cli.h"
 
 using namespace std;
 

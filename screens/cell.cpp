@@ -44,7 +44,6 @@ void * CellScreen::scanArea(void *threadID) {
     for(vector<WifiCell>::size_type i = 0; i < cellList.size(); i++) {
       if (cellList[i].getMAC() == CellScreen::cellMAC) {
         CellScreen::scanningCellLeft = cellList[i];
-        CellScreen::scanningCellRight = cellList[i - 1];
         found = true;
         break;
       }
@@ -53,6 +52,21 @@ void * CellScreen::scanArea(void *threadID) {
     if (!found) {
       CellScreen::scanningCellLeft.setSignalLevel("-256");
       CellScreen::scanningCellLeft.setLinkQuality(string("0/" + CLI::convertInt(CellScreen::scanningCellLeft.getLinkQualityMax())));
+    }
+
+    wifiList->wifiScan("wlan1");
+    cellList = wifiList->getWifiList();
+
+    found = false;
+    for(vector<WifiCell>::size_type i = 0; i < cellList.size(); i++) {
+      if (cellList[i].getMAC() == CellScreen::cellMAC) {
+        CellScreen::scanningCellRight = cellList[i];
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
       CellScreen::scanningCellRight.setSignalLevel("-256");
       CellScreen::scanningCellRight.setLinkQuality(string("0/" + CLI::convertInt(CellScreen::scanningCellRight.getLinkQualityMax())));
     }
@@ -99,7 +113,7 @@ void CellScreen::updateWindow(vector<int> touchEvents) {
     attron(COLOR_PAIR(2));
     mvaddstr(3, 16, CellScreen::scanningCellLeft.getESSID().c_str());
     mvaddstr(4, 16, CellScreen::scanningCellLeft.getMAC().c_str());
-    mvaddstr(5, 21, "wlan0 wlan0");
+    mvaddstr(5, 21, "wlan0 wlan1");
     attroff(COLOR_PAIR(2));
 
     attron(COLOR_PAIR(9));
