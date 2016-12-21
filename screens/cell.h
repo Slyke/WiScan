@@ -18,6 +18,8 @@ class CellScreen
     static WINDOW * maintty;
 
   private:
+    static string leftScanner;
+    static string rightScanner;
     static vector<UIObject> uiObjects;
     static WifiCell scanningCellLeft;
     static WifiCell scanningCellRight;

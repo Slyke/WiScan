@@ -23,6 +23,8 @@ string CellScreen::cellMAC = "";
 WifiCell CellScreen::scanningCellLeft;
 WifiCell CellScreen::scanningCellRight;
 int CellScreen::scanState = -1;
+string CellScreen::leftScanner = "wlan0";
+string CellScreen::rightScanner = "wlan0";
 
 void CellScreen::setupKeyboardEvents() {
   KeyboardWatch::clearKeys();
@@ -36,8 +38,8 @@ void * CellScreen::scanArea(void *threadID) {
     vector<WifiCell> cellList;
     CellScreen::scanState = 1;
     WifiList * wifiList = new WifiList();
-    
-    wifiList->wifiScan();
+
+    wifiList->wifiScan(leftScanner);
     cellList = wifiList->getWifiList();
 
     bool found = false;
@@ -54,7 +56,7 @@ void * CellScreen::scanArea(void *threadID) {
       CellScreen::scanningCellLeft.setLinkQuality(string("0/" + CLI::convertInt(CellScreen::scanningCellLeft.getLinkQualityMax())));
     }
 
-    wifiList->wifiScan("wlan1");
+    wifiList->wifiScan(rightScanner);
     cellList = wifiList->getWifiList();
 
     found = false;
@@ -113,7 +115,7 @@ void CellScreen::updateWindow(vector<int> touchEvents) {
     attron(COLOR_PAIR(2));
     mvaddstr(3, 16, CellScreen::scanningCellLeft.getESSID().c_str());
     mvaddstr(4, 16, CellScreen::scanningCellLeft.getMAC().c_str());
-    mvaddstr(5, 21, "wlan0 wlan1");
+    mvaddstr(5, 21, string(CellScreen::leftScanner + " " + CellScreen::leftScanner).c_str());
     attroff(COLOR_PAIR(2));
 
     attron(COLOR_PAIR(9));
